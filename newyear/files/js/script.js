@@ -104,9 +104,6 @@ fscreen.addEventListener('fullscreenchange', () => {
     });
 });
 
-
-
-
 // Simple state container; the source of truth.
 const store = {
     _listeners: new Set(),
@@ -134,7 +131,7 @@ const store = {
                 :
                 '2', // Mobile default
             autoLaunch: false, //
-            finale: false,
+            finale: true,
             skyLighting: SKY_LIGHT_NORMAL + '',
             hideControls: IS_HEADER,
             longExposure: false,
@@ -291,7 +288,6 @@ function configDidUpdate() {
 
 // Selectors
 // -----------
-
 const isRunning = (state = store.state) => !state.paused && !state.menuOpen;
 // Whether user has enabled sound.
 const soundEnabledSelector = (state = store.state) => state.soundEnabled;
@@ -305,8 +301,6 @@ const shellSizeSelector = () => +store.state.config.size;
 const finaleSelector = () => store.state.config.finale;
 const skyLightingSelector = () => +store.state.config.skyLighting;
 const scaleFactorSelector = () => store.state.config.scaleFactor;
-
-
 
 // Help Content
 const helpContent = {
@@ -686,24 +680,24 @@ const palmShell = (size = 1) => {
     };
 };
 
-const ringShell = (size = 1) => {
-    const color = randomColor();
-    const pistil = Math.random() < 0.75;
-    return {
-        shellSize: size,
-        ring: true,
-        color,
-        spreadSize: 300 + size * 100,
-        starLife: 900 + size * 200,
-        starCount: 2.2 * PI_2 * (size + 1),
-        pistil,
-        pistilColor: makePistilColor(color),
-        glitter: !pistil ? 'light' : '',
-        glitterColor: color === COLOR.Gold ? COLOR.Gold : COLOR.White,
-        streamers: Math.random() < 0.3
-    };
-    // return Object.assign({}, defaultShell, config);
-};
+// const ringShell = (size = 1) => {
+//     const color = randomColor();
+//     const pistil = Math.random() < 0.75;
+//     return {
+//         shellSize: size,
+//         ring: true,
+//         color,
+//         spreadSize: 300 + size * 100,
+//         starLife: 900 + size * 200,
+//         starCount: 2.2 * PI_2 * (size + 1),
+//         pistil,
+//         pistilColor: makePistilColor(color),
+//         glitter: !pistil ? 'light' : '',
+//         glitterColor: color === COLOR.Gold ? COLOR.Gold : COLOR.White,
+//         streamers: Math.random() < 0.3
+//     };
+//     // return Object.assign({}, defaultShell, config);
+// };
 
 const crossetteShell = (size = 1) => {
     const color = randomColor({
@@ -832,7 +826,7 @@ const shellTypes = {
     'Ghost': ghostShell,
     'Horse Tail': horsetailShell,
     'Palm': palmShell,
-    'Ring': ringShell,
+    // 'Ring': ringShell,
     'Strobe': strobeShell,
     'Willow': willowShell
 };
@@ -1031,7 +1025,7 @@ function seqPyramid() {
     const barrageCountHalf = IS_DESKTOP ? 7 : 4;
     const largeSize = shellSizeSelector();
     const smallSize = Math.max(0, largeSize - 3);
-    const randomMainShell = Math.random() < 0.78 ? crysanthemumShell : ringShell;
+    const randomMainShell = Math.random() < 0.78 ? crysanthemumShell : crysanthemumShell; //ringShell;
     const randomSpecialShell = randomShell;
 
     function launchShell(x, useSpecial) {
@@ -1074,7 +1068,7 @@ function seqSmallBarrage() {
     const barrageCount = IS_DESKTOP ? 11 : 5;
     const specialIndex = IS_DESKTOP ? 3 : 1;
     const shellSize = Math.max(0, shellSizeSelector() - 2);
-    const randomMainShell = Math.random() < 0.78 ? crysanthemumShell : ringShell;
+    const randomMainShell = Math.random() < 0.78 ? crysanthemumShell : crysanthemumShell; //ringShell;
     const randomSpecialShell = randomFastShell();
 
     // (cos(x*5π+0.5π)+1)/2 is a custom wave bounded by 0 and 1 used to set varying launch heights
@@ -2174,7 +2168,6 @@ const soundManager = {
             playbackRateMin: 0.85,
             playbackRateMax: 0.95,
             fileNames: [
-
                 'lift1.mp3',
                 'lift2.mp3',
                 'lift3.mp3'
