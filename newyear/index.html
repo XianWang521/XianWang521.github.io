@@ -10,7 +10,7 @@
 	p{font-size:48px;}
 	p{font-family:"楷体";}
 	</style>
-    <title>新年快乐</title>
+    <title>睿宝新年快乐</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,6 +21,10 @@
 </head>
 
 <body>
+    <div id="yhBtn" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff ; font-size:20px">
+        <p>睿宝新年快乐！</p>
+    </div>
+
     <div style="height: 0; width: 0; position: absolute; visibility: hidden;">
         <svg xmlns="http://www.w3.org/2000/svg">
             <symbol id="icon-play" viewBox="0 0 24 24">
@@ -62,10 +66,10 @@
             <div class="loading-init__status"></div>
         </div>
         <div class="stage-container remove">
-            <div class="page_two hide">
+            <!-- <div class="page_two hide">
                 <div id="text" style="display:none;"><p><span id="text1"></span></p></div>
                 <div class="type_words" id="contents" style="font-size:1.15rem;line-height:1.5rem;"></div>
-            </div>
+            </div> -->
             <div class="canvas-container">
                 <canvas id="trails-canvas"></canvas>
                 <canvas id="main-canvas"></canvas>
@@ -137,13 +141,16 @@
     <script src="files/js/script.js"></script>
 
     <script>
-        setTimeout(() => {
-            start()
-            fireworks();
-        }, 1600) // 
-        console.log(updateConfig({
-            autoLaunch: true
-        }));
+        $('#yhBtn').click(e => {
+            $('#yhBtn').hide()
+            setTimeout(() => {
+                start()
+                fireworks();
+            }, 1600) // 
+            console.log(updateConfig({
+                autoLaunch: true
+            }));
+        })
 
         function fireworks() {
             $('.page_one').addClass('hide');
@@ -166,7 +173,6 @@
             }, 10)
         }
     </script>
-
     <script>
         var _hmt = _hmt || [];
         (function() {
@@ -176,13 +182,13 @@
             s.parentNode.insertBefore(hm, s);
         })();
     </script>
-<script>
-function time() {    
-    document.getElementById("text1").innerHTML = 
-    "<p>睿宝新年快乐！</p>"
-}
-time()
-</script>
+    <!-- <script>
+        function time() {    
+            document.getElementById("text1").innerHTML = 
+            "<p>睿宝新年快乐！</p>"
+        }
+        time()
+    </script> -->
 </body>
 
 </html>
