@@ -12,6 +12,29 @@
     display: flex; align-items: flex-end; justify-content: center;
     font-family: 'Segoe UI', system-ui, sans-serif;
   }
+  /* 顶部消息样式 */
+  .top-message {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+    padding: 12px 32px;
+    font-size: 2.1rem;
+    font-weight: bold;
+    border-radius: 16px;
+    letter-spacing: 1px;
+    z-index: 999;
+    box-shadow: 0 3px 30px rgba(225,40,80,0.07);
+    transition: opacity 0.7s;
+    white-space: nowrap;
+    text-shadow: 0 2px 8px #346, 0 0px 16px #0b294e;
+  }
+  .top-message.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
   /* 雪花样式 */
   .snowflake {
     position: fixed;
@@ -135,6 +158,8 @@
 </head>
 <body>
   <div class="scene">
+    <!-- 顶部一行字 -->
+    <div class="top-message" id="topMessage">Merry Christmas! Rachel!</div>
     <div class="tree">
       <div class="star"></div>
       <div class="layer"></div>
@@ -172,8 +197,31 @@
     return snow;
   }
 
-  // 只生成顶端落下的新雪花（取消初始化）
-  setInterval(() => createSnow(), 10);
+  // 雪花动画的 interval 定时器变量
+  let snowTimer = null;
+
+  // 顶部一行字1秒后消失，消失后开始雪花
+  window.addEventListener('DOMContentLoaded', function() {
+    const topMsg = document.getElementById('topMessage');
+    setTimeout(function(){
+      if (topMsg) {
+        topMsg.classList.add('hide');
+        // 动画后移除节点并启动雪花
+        setTimeout(() => {
+          topMsg.remove();
+          // 等顶部字完全消失后再下雪
+          if (!snowTimer) {
+            snowTimer = setInterval(() => createSnow(), 10);
+          }
+        }, 1000);
+      } else {
+        // 若意外没有 topMsg节点也能继续下雪
+        if (!snowTimer) {
+          snowTimer = setInterval(() => createSnow(), 10);
+        }
+      }
+    }, 1000);
+  });
 
   // 灯串分布于树体（放大后适配灯串位置和宽高）
   const lights = document.getElementById('lights');
