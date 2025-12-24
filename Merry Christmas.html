@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>Merry Christmas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(#0a1a2a, #0b2742);
+    overflow: hidden;
+    height: 100vh;
+    display: flex; align-items: flex-end; justify-content: center;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  /* 雪花样式 */
+  .snowflake {
+    position: fixed;
+    color: #fff;
+    opacity: 0.8;
+    pointer-events: none;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.7));
+    animation-name: fall;
+    animation-timing-function: linear;
+  }
+  @keyframes fall {
+    to { transform: translate(var(--x-move, 0px), 110vh); opacity: 0.4; }
+  }
+
+  /* 圣诞树容器 -- 比例放大1.5倍 */
+  .scene { position: relative; width: 630px; height: 960px; margin-bottom: 60px; }
+  .tree {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 525px; height: 780px;
+  }
+  .layer {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    width: 0; height: 15px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.25));
+  }
+  .layer:nth-child(2) { 
+    bottom: 570px;
+    border-left: 66px solid transparent; 
+    border-right: 66px solid transparent; 
+    border-bottom: 139.5px solid #11814a; 
+    border-bottom-color: #11814a; 
+    z-index: 4;
+  }
+  .layer:nth-child(3) { 
+    bottom: 390px; 
+    border-left: 150px solid transparent; 
+    border-right: 150px solid transparent; 
+    border-bottom: 240px solid #0f6f3d; 
+    border-bottom-color: #0f6f3d; 
+    z-index: 3;
+  }
+  .layer:nth-child(4) { 
+    bottom: 180px; 
+    border-left: 225px solid transparent; 
+    border-right: 225px solid transparent; 
+    border-bottom: 270px solid #0d5e33; 
+    border-bottom-color: #0d5e33; 
+    z-index: 2;
+  }
+  .layer:nth-child(5) { 
+    bottom: 0; 
+    border-left: 255px solid transparent; 
+    border-right: 255px solid transparent; 
+    border-bottom: 210px solid #0b4f2b; 
+    border-bottom-color: #0b4f2b; 
+    z-index: 1;
+  }
+
+  .trunk {
+    position: absolute; bottom: -90px; left: 50%; transform: translateX(-50%);
+    width: 105px; height: 120px; background: #8b5a2b; border-radius: 10.5px;
+    box-shadow: 0 9px 0 rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  .star {
+    position: absolute;
+    top: 22.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 66px;
+    height: 66px;
+    background: gold;
+    clip-path: polygon(
+      50% 0%,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
+      21% 91%,
+      32% 57%,
+      2% 35%,
+      39% 35%
+    );
+    filter: drop-shadow(0 0 10.5px rgba(255,215,0,0.6));
+    z-index: 20;
+  }
+
+  .lights {
+    position: absolute; width: 525px; height: 780px; top: 0; left: 50%;
+    transform: translateX(-50%); pointer-events: none; z-index: 15;
+  }
+  .light {
+    position: absolute; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--c, gold);
+    animation: twinkle 1.5s ease-in-out infinite alternate;
+    box-shadow: 0 0 27px 9px var(--c, gold);
+  }
+  @keyframes twinkle { to { opacity: 0.3; transform: scale(1.2); } }
+
+  .sock {
+    position: absolute; width: 54px; height: 72px; background: #d8344f;
+    border-radius: 10.5px 10.5px 30px 30px; box-shadow: 0 7.5px 0 rgba(0,0,0,0.25);
+    z-index: 16;
+  }
+  .sock:before {
+    content: ''; position: absolute; top: -18px; left: -4.5px;
+    width: 63px; height: 27px; background: #f4f4f4; border-radius: 10.5px;
+  }
+
+  .ornament {
+    position: absolute;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--c, #f9ca24);
+    border: 2px solid #fff;
+    z-index: 17;
+    box-shadow: 0 2px 10px 2px rgba(80,80,80,0.18);
+  }
+</style>
+</head>
+<body>
+  <div class="scene">
+    <div class="tree">
+      <div class="star"></div>
+      <div class="layer"></div>
+      <div class="layer"></div>
+      <div class="layer"></div>
+      <div class="layer"></div>
+      <div class="trunk"></div>
+      <div class="lights" id="lights"></div>
+      <div id="socks"></div>
+      <div id="ornaments"></div>
+    </div>
+  </div>
+
+<script>
+(function() {
+  // 雪花配置
+  const snowChars = ['❄','✻','✼','✥','＊','❅'];
+
+  // 返回雪花DOM节点，便于自主管理/删除
+  function createSnow() {
+    const snow = document.createElement('div');
+    snow.className = 'snowflake';
+    snow.textContent = snowChars[Math.floor(Math.random()*snowChars.length)];
+    // 雪花体积
+    const size = Math.random() * 2.2 + 1.4; // rem
+    snow.style.left = Math.random()*100 + 'vw';
+    snow.style.fontSize = size + 'rem';
+    snow.style.setProperty('--x-move', (Math.random()*80 - 40) + 'px');
+    // 动画时长
+    snow.style.animationDuration = (Math.random()*2.5 + 2.5) + 's';
+    snow.style.top = '-5vh';
+    snow.style.position = 'fixed';
+    document.body.appendChild(snow);
+    setTimeout(() => snow.remove(), 7000);
+    return snow;
+  }
+
+  // 只生成顶端落下的新雪花（取消初始化）
+  setInterval(() => createSnow(), 10);
+
+  // 灯串分布于树体（放大后适配灯串位置和宽高）
+  const lights = document.getElementById('lights');
+  const colors = ['gold', '#ff7675', '#74b9ff', '#55efc4', '#ffeaa7'];
+  // 增加灯带的数量（增加更多灯泡坐标，分布更均匀/分层）
+  const lightPositions = [
+    // 第一层（最上面）
+    {x: 170*1.5, y: 70*1.5},
+    {x: 150*1.5, y: 110*1.5},
+    {x: 180*1.5, y: 120*1.5},
+    {x: 165*1.5, y: 145*1.5},
+    {x: 170*1.5, y: 180*1.5},
+    {x: 150*1.5, y: 180*1.7},
+    // 第二层
+    {x: 212*1.5, y: 206*1.5},
+    {x: 110*1.5, y: 230*1.5},
+    {x: 160*1.5, y: 240*1.5},
+    {x: 140*1.5, y: 270*1.5},
+    // 第三层
+    {x: 160*1.5, y: 300*1.5},
+    {x: 200*1.5, y: 320*1.5},
+    {x: 90*1.5, y: 330*1.5},
+    {x: 150*1.5, y: 335*1.5},
+    {x: 240*1.5, y: 340*1.5},
+    {x: 200*1.5, y: 364*1.5},
+    {x: 60*1.5, y: 370*1.5},
+    {x: 120*1.5, y: 375*1.5},
+    {x: 280*1.5, y: 380*1.5},
+    // 第四层
+    {x: 200*1.5, y: 415*1.5},
+    {x: 130*1.5, y: 420*1.5},
+    {x: 220*1.5, y: 440*1.5},
+    {x: 140*1.5, y: 450*1.5},
+    {x: 90*1.5, y: 460*1.5},
+    {x: 190*1.5, y: 465*1.5},
+    {x: 110*1.5, y: 480*1.5},
+    {x: 230*1.5, y: 485*1.5},
+    {x: 60*1.5, y: 490*1.5},
+    {x: 280*1.5, y: 495*1.5}
+  ];
+  for (let i=0; i<lightPositions.length; i++) {
+    const l = document.createElement('div');
+    l.className = 'light';
+    l.style.setProperty('--c', colors[i % colors.length]);
+    l.style.left = lightPositions[i].x + 'px';
+    l.style.top = lightPositions[i].y + 'px';
+    l.style.animationDelay = (Math.random()*1.5) + 's';
+    lights.appendChild(l);
+  }
+
+  const socks = document.getElementById('socks');
+  const sockPositions = [
+    {x: 110*1.5, y: 160*1.5, r: -18},
+    {x: 198*1.5, y: 242*1.5, r: 10},
+    {x: 150*1.5, y: 390*1.5, r: -11}
+  ];
+  sockPositions.forEach(p => {
+    const s = document.createElement('div');
+    s.className = 'sock';
+    s.style.left = p.x + 'px';
+    s.style.top = p.y + 'px';
+    s.style.transform = `rotate(${p.r}deg)`;
+    socks.appendChild(s);
+  });
+})();
+</script>
+</body>
+</html>
